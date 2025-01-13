@@ -1,7 +1,9 @@
-import { motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronRight, ArrowUp } from "lucide-react";
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import DoctorCarousel from '../components/DoctorCarousel';
 
 const slideIn = {
   initial: { opacity: 0, x: -20 },
@@ -15,6 +17,51 @@ const staggerContainer = {
       staggerChildren: 0.1,
     },
   },
+};
+
+const ScrollToTopButton = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const toggleVisibility = () => {
+      if (window.scrollY > 500) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener("scroll", toggleVisibility);
+
+    return () => {
+      window.removeEventListener("scroll", toggleVisibility);
+    };
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.5 }}
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 bg-sky-900 text-white p-3 rounded-full shadow-lg hover:bg-sky-700 transition-colors z-50 group"
+          whileHover={{ y: -3 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <ArrowUp className="h-6 w-6 group-hover:animate-bounce" />
+        </motion.button>
+      )}
+    </AnimatePresence>
+  );
 };
 
 const ArticleCard = ({ image, category, title, preview, date, index }) => (
@@ -33,13 +80,13 @@ const ArticleCard = ({ image, category, title, preview, date, index }) => (
       />
       <motion.span
         whileHover={{ scale: 1.05 }}
-        className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm"
+        className="absolute top-4 left-4 bg-sky-700 text-white px-3 py-1 rounded-full text-sm"
       >
         {category}
       </motion.span>
     </div>
     <div className="p-6">
-      <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+      <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-sky-700 transition-colors">
         {title}
       </h3>
       <p className="text-gray-600 mb-4 line-clamp-2">{preview}</p>
@@ -47,7 +94,7 @@ const ArticleCard = ({ image, category, title, preview, date, index }) => (
         <span className="text-sm text-gray-500">{date}</span>
         <motion.button
           whileHover={{ x: 5 }}
-          className="text-blue-600 font-semibold inline-flex items-center group-hover:gap-2 transition-all"
+          className="text-sky-700 font-semibold inline-flex items-center group-hover:gap-2 transition-all"
         >
           Baca Selengkapnya
           <ChevronRight className="h-4 w-4 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
@@ -56,6 +103,7 @@ const ArticleCard = ({ image, category, title, preview, date, index }) => (
     </div>
   </motion.div>
 );
+
 
 const Homepage = () => {
   const articles = [
@@ -85,51 +133,12 @@ const Homepage = () => {
     },
   ];
 
-  const DoctorCard = ({ image, name, specialization, quote }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      viewport={{ once: true }}
-      className="bg-white p-8 rounded-2xl shadow-lg flex flex-col items-center"
-    >
-      {/* Foto dan Nama di Bagian Atas */}
-      <div className="flex items-center gap-4 mb-6">
-        <img
-          src={image}
-          alt={name}
-          className="w-16 h-16 rounded-full object-cover"
-        />
-        <div>
-          <h4 className="font-semibold text-gray-900 text-lg">{name}</h4>
-          <p className="text-gray-600 text-sm">{specialization}</p>
-        </div>
-      </div>
-      {/* Konten di Bagian Bawah */}
-      <p className="text-gray-700 text-center italic">{quote}</p>
-    </motion.div>
-  );
-
-  const doctors = [
-    {
-      name: " Dr. Terawan Agus Putranto",
-      specialization: "Spesialisasi: Radiologi dan Terapi Inovatif",
-      image: "/Doktor1.webp",
-      quote:
-        "Kesehatan adalah investasi terbesar dalam hidup. Jangan pernah abaikan sinyal dari tubuh Anda, karena tubuh yang sehat adalah kunci kebahagiaan sejati.",
-    },
-    {
-      name: "Dr. Siti Fadilah Supari",
-      specialization: "Spesialisasi: Penyakit Dalam dan Kesehatan Publik",
-      image: "/Doktor2.webp",
-      quote:
-      "Pencegahan lebih baik daripada pengobatan. Dengan edukasi kesehatan yang baik, kita dapat memutus rantai penyakit sebelum terlambat."
-    },
-  ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-400">
       <Navbar />
+      
+      <ScrollToTopButton />
 
       {/* Hero Section */}
       <div className="relative pt-24">
@@ -156,14 +165,14 @@ const Homepage = () => {
           >
             <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-8">
               Kesehatan Anda Adalah{" "}
-              <span className="text-cyan-200">Prioritas</span> Kami
+              <span className="text-cyan-600">Prioritas</span> Kami
             </h1>
             <p className="text-blue-50 text-lg mb-8">
               Dapatkan layanan kesehatan terbaik dengan dokter-dokter
               berpengalaman. Kami siap melayani 24/7 untuk kesehatan Anda.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-colors shadow-lg">
+              <button className="bg-white text-sky-700 px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-colors shadow-lg">
                 Jadwalkan Konsultasi
               </button>
               <button className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white/10 transition-colors">
@@ -193,7 +202,7 @@ const Homepage = () => {
                 para ahli kami
               </p>
             </div>
-            <button className="hidden md:flex items-center gap-2 text-blue-600 font-semibold hover:gap-4 transition-all">
+            <button className="hidden md:flex items-center gap-2 text-sky-950 font-semibold hover:gap-4 transition-all">
               Lihat Semua Artikel
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -205,33 +214,15 @@ const Homepage = () => {
             ))}
           </div>
 
-          <button className="md:hidden w-full mt-8 text-blue-600 font-semibold flex items-center justify-center gap-2">
+          <button className="md:hidden w-full mt-8 text-sky-950 font-semibold flex items-center justify-center gap-2">
             Lihat Semua Artikel
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
       </motion.div>
 
-      <motion.div
-        variants={staggerContainer}
-        initial="initial"
-        whileInView="animate"
-        viewport={{ once: true }}
-        className="bg-slate-50 py-24"
-      >
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              Tim Dokter Profesional Kami
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            {doctors.map((doctor, index) => (
-              <DoctorCard key={index} {...doctor} />
-            ))}
-          </div>
-        </div>
-      </motion.div>
+      {/* Doctors Section */}
+      <DoctorCarousel />
 
       {/* CTA Section */}
       <motion.div
@@ -242,7 +233,7 @@ const Homepage = () => {
         className="bg-slate-50"
       >
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="bg-gradient-to-br from-blue-600 to-cyan-500 p-12 rounded-3xl text-center">
+          <div className="bg-gradient-to-br from-sky-950 to-cyan-400 p-12 rounded-3xl text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               Butuh Konsultasi?
             </h2>
@@ -250,7 +241,7 @@ const Homepage = () => {
               Hubungi kami sekarang untuk mendapatkan penanganan medis terbaik
               dari tim dokter profesional kami
             </p>
-            <button className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-colors shadow-lg inline-flex items-center group">
+            <button className="bg-white text-sky-700 px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-colors shadow-lg inline-flex items-center group">
               Hubungi Kami
               <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </button>
